@@ -57,8 +57,62 @@
         </div>
       </div>
 
-      <!-- Step 2+: Plant Recommendations -->
-      <div v-if="currentStep > 1" class="recommendations-section">
+      <!-- Step 2: Choose Care Time -->
+      <div v-if="currentStep === 2" class="content-section">
+        <h1 class="form-title">How Much Time Can You Spend?</h1>
+        <p class="form-subtitle">Select the daily time you can dedicate to plant care.</p>
+
+        <div class="location-options">
+          <div
+            v-for="option in careTimes"
+            :key="option.id"
+            class="location-card"
+            @click="selectCareTime(option)"
+          >
+            <h3 class="location-title">{{ option.title }}</h3>
+            <p class="location-desc">{{ option.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Pet Preference -->
+      <div v-if="currentStep === 3" class="content-section">
+        <h1 class="form-title">Do You Have Pets?</h1>
+        <p class="form-subtitle">We'll filter to pet-safe plants if needed.</p>
+
+        <div class="location-options">
+          <div
+            v-for="option in petOptions"
+            :key="option.id"
+            class="location-card"
+            @click="selectPetOption(option)"
+          >
+            <h3 class="location-title">{{ option.title }}</h3>
+            <p class="location-desc">{{ option.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Plant Difficulty -->
+      <div v-if="currentStep === 4" class="content-section">
+        <h1 class="form-title">Select Plant Difficulty</h1>
+        <p class="form-subtitle">Choose how challenging you want your plant care to be.</p>
+
+        <div class="location-options">
+          <div
+            v-for="option in difficulties"
+            :key="option.id"
+            class="location-card"
+            @click="selectDifficulty(option)"
+          >
+            <h3 class="location-title">{{ option.title }}</h3>
+            <p class="location-desc">{{ option.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendations (no Step5 in progress bar) -->
+      <div v-if="currentStep === 5" class="recommendations-section">
         <h2 class="section-title">Plant Recommendations</h2>
 
         <div class="plants-grid">
@@ -93,14 +147,27 @@ export default {
       steps: [
         { number: "0", label: "Address", status: "active" },
         { number: "1", label: "Location", status: "inactive" },
-        { number: "2", label: "Step 2", status: "inactive" },
-        { number: "3", label: "Step 3", status: "inactive" },
-        { number: "4", label: "Step 4", status: "inactive" }
+        { number: "2", label: "Care Time", status: "inactive" },
+        { number: "3", label: "Pets", status: "inactive" },
+        { number: "4", label: "Difficulty", status: "inactive" }
       ],
       plantLocations: [
         { id: 1, title: "Apartment window", description: "Good sun, limited footprint" },
         { id: 2, title: "Inside the room", description: "No natural sun" },
         { id: 3, title: "Shaded balcony", description: "Partial sun, windy" }
+      ],
+      careTimes: [
+        { id: 1, title: "Minimal (< 15 min per day)", description: "Self-watering suggestions ahead" },
+        { id: 2, title: "Enthusiast (More than 15 min per day)", description: "Higher yield species unlocked" }
+      ],
+      petOptions: [
+        { id: 1, title: "Yes, keep it pet-safe", description: "Removes toxic species for cats/dogs" },
+        { id: 2, title: "No pets at home", description: "Full catalog available" }
+      ],
+      difficulties: [
+        { id: 1, title: "Difficult", description: "Challenging plants, need expert care" },
+        { id: 2, title: "Medium", description: "Balanced care effort" },
+        { id: 3, title: "Easy", description: "Low maintenance, beginner-friendly" }
       ],
       plants: [
         {
@@ -133,8 +200,6 @@ export default {
   methods: {
     handleNext() {
       if (this.address.trim()) {
-        console.log("Address submitted:", this.address);
-        this.$emit("address-submitted", this.address);
         this.steps[this.currentStep].status = "completed";
         this.currentStep++;
         this.steps[this.currentStep].status = "active";
@@ -143,20 +208,38 @@ export default {
       }
     },
     selectLocation(option) {
-      console.log("Location selected:", option.title);
       this.$emit("location-selected", option);
-
       this.steps[this.currentStep].status = "completed";
       this.currentStep++;
       this.steps[this.currentStep].status = "active";
     },
+    selectCareTime(option) {
+      this.$emit("caretime-selected", option);
+      this.steps[this.currentStep].status = "completed";
+      this.currentStep++;
+      this.steps[this.currentStep].status = "active";
+    },
+    selectPetOption(option) {
+      this.$emit("pet-option-selected", option);
+      this.steps[this.currentStep].status = "completed";
+      this.currentStep++;
+      this.steps[this.currentStep].status = "active";
+    },
+    selectDifficulty(option) {
+      this.$emit("difficulty-selected", option);
+      this.steps[this.currentStep].status = "completed";
+      // 进入推荐页面（但不更新路线图）
+      this.currentStep = 5;
+    },
     selectPlant(plant) {
-      console.log("Selected plant:", plant.name);
       this.$emit("plant-selected", plant);
     }
   }
 };
 </script>
+
+
+
 
 <style scoped>
 * {
