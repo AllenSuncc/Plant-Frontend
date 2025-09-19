@@ -12,7 +12,7 @@
                     <span>{{ coins.toLocaleString() }}</span>
                 </div>
                 <div class="stat-item">
-                    <img src="@/assets/images/star.png" alt="XP" class="stat-icon-img" />
+                    <img src="@/assets/images/Star.png" alt="XP" class="stat-icon-img" />
                     <span>{{ xp.toLocaleString() }} XP</span>
                 </div>
                 <div class="stat-item">
