@@ -72,6 +72,15 @@
 </template>
 
 <script>
+
+import findPlantImg from '@/assets/images/find-plant.png'
+import journeyImg from '@/assets/images/journey.png'
+import albumImg from '@/assets/images/album.png'
+
+import Ins1Img from '@/assets/images/Ins1.png'
+import Ins2Img from '@/assets/images/Ins2.png'
+import Ins3Img from '@/assets/images/Ins3.png'
+
 export default {
     name: 'PlantRecommendation',
     data() {
@@ -88,21 +97,21 @@ export default {
                     id: 1,
                     title: 'Find New Plants',
                     description: 'Discover new plants to love.',
-                    image: '/src/assets/images/find-plant.png',
+                    image: findPlantImg,
                     route: '/discover'
                 },
                 {
                     id: 2,
                     title: 'My Journey',
                     description: 'Track your progress and achievements.',
-                    image: '/src/assets/images/journey.png',
+                    image: journeyImg,
                     route: '/journey'
                 },
                 {
                     id: 3,
                     title: 'My Album',
                     description: 'View your plant collection.',
-                    image: '/src/assets/images/album.png',
+                    image: albumImg,
                     route: '/album'
                 }
             ],
@@ -111,27 +120,27 @@ export default {
             recommendedPlants: [
                 {
                     id: 1,
-                    name: 'Instgram 1',
+                    name: 'Instagram 1',
                     description: 'Easy to care for and striking.',
-                    image: '/src/assets/images/Ins1.png',
+                    image: Ins1Img,
                     difficulty: 'Easy',
                     light: 'Medium',
                     water: 'Weekly'
                 },
                 {
                     id: 2,
-                    name: 'Instgram 2',
+                    name: 'Instagram 2',
                     description: 'Elegant and low-light tolerant.',
-                    image: '/src/assets/images/Ins2.png',
+                    image: Ins2Img,
                     difficulty: 'Easy',
                     light: 'Low',
                     water: 'Weekly'
                 },
                 {
                     id: 3,
-                    name: 'Instgram 3',
+                    name: 'Instagram 3',
                     description: 'Hardy and a great air purifier.',
-                    image: '/src/assets/images/Ins3.png',
+                    image: Ins3Img,
                     difficulty: 'Very Easy',
                     light: 'Any',
                     water: 'Bi-weekly'
@@ -408,6 +417,7 @@ export default {
     .plant-app {
         padding: 12px;
     }
+
     .feature-cards,
     .plant-grid {
         grid-template-columns: 1fr;
