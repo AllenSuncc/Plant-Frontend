@@ -1,0 +1,443 @@
+<template>
+  <div class="plant-app">
+    <div class="container">
+      <!-- Header with Progress Bar -->
+      <div class="header">
+        <div class="progress-bar">
+          <div class="step" v-for="(step, index) in steps" :key="index">
+            <div
+              class="step-circle"
+              :class="{
+                'completed': step.status === 'completed',
+                'active': step.status === 'active',
+                'inactive': step.status === 'inactive'
+              }"
+            >
+              <span v-if="step.status !== 'completed'">{{ step.number }}</span>
+            </div>
+            <span class="step-label">{{ step.label }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 0: Address Form -->
+      <div v-if="currentStep === 0" class="content-section">
+        <div class="address-form">
+          <h1 class="form-title">Where do you live?</h1>
+          <p class="form-subtitle">Enter your address to find plants suitable for your area.</p>
+
+          <div class="input-group">
+            <input
+              type="text"
+              class="address-input"
+              placeholder="Enter your address"
+              v-model="address"
+              @keyup.enter="handleNext"
+            />
+            <button class="next-button" @click="handleNext">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 1: Choose Plant Location -->
+      <div v-if="currentStep === 1" class="content-section">
+        <h1 class="form-title">Choose Your Plant Location</h1>
+        <p class="form-subtitle">Select where you plan to place your plant.</p>
+
+        <div class="location-options">
+          <div
+            v-for="option in plantLocations"
+            :key="option.id"
+            class="location-card"
+            @click="selectLocation(option)"
+          >
+            <h3 class="location-title">{{ option.title }}</h3>
+            <p class="location-desc">{{ option.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2+: Plant Recommendations -->
+      <div v-if="currentStep > 1" class="recommendations-section">
+        <h2 class="section-title">Plant Recommendations</h2>
+
+        <div class="plants-grid">
+          <div
+            class="plant-card"
+            v-for="plant in plants"
+            :key="plant.id"
+            @click="selectPlant(plant)"
+          >
+            <div class="plant-image" :class="plant.imageClass">
+              <img v-if="plant.image" :src="plant.image" :alt="plant.name" />
+              <span v-else class="plant-emoji">{{ plant.emoji }}</span>
+            </div>
+            <div class="plant-info">
+              <h3 class="plant-name">{{ plant.name }}</h3>
+              <p class="plant-description">{{ plant.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "LittleBabyPlant",
+  data() {
+    return {
+      address: "",
+      currentStep: 0,
+      steps: [
+        { number: "0", label: "Address", status: "active" },
+        { number: "1", label: "Location", status: "inactive" },
+        { number: "2", label: "Step 2", status: "inactive" },
+        { number: "3", label: "Step 3", status: "inactive" },
+        { number: "4", label: "Step 4", status: "inactive" }
+      ],
+      plantLocations: [
+        { id: 1, title: "Apartment window", description: "Good sun, limited footprint" },
+        { id: 2, title: "Inside the room", description: "No natural sun" },
+        { id: 3, title: "Shaded balcony", description: "Partial sun, windy" }
+      ],
+      plants: [
+        {
+          id: 1,
+          name: "Peace Lily",
+          description: "Low maintenance, air purifying",
+          imageClass: "peace-lily",
+          emoji: "🌿",
+          image: ""
+        },
+        {
+          id: 2,
+          name: "Snake Plant",
+          description: "Tolerates low light, easy care",
+          imageClass: "snake-plant",
+          emoji: "🌵",
+          image: ""
+        },
+        {
+          id: 3,
+          name: "ZZ Plant",
+          description: "Drought tolerant, minimal care",
+          imageClass: "zz-plant",
+          emoji: "🍃",
+          image: ""
+        }
+      ]
+    };
+  },
+  methods: {
+    handleNext() {
+      if (this.address.trim()) {
+        console.log("Address submitted:", this.address);
+        this.$emit("address-submitted", this.address);
+        this.steps[this.currentStep].status = "completed";
+        this.currentStep++;
+        this.steps[this.currentStep].status = "active";
+      } else {
+        alert("Please enter your address");
+      }
+    },
+    selectLocation(option) {
+      console.log("Location selected:", option.title);
+      this.$emit("location-selected", option);
+
+      this.steps[this.currentStep].status = "completed";
+      this.currentStep++;
+      this.steps[this.currentStep].status = "active";
+    },
+    selectPlant(plant) {
+      console.log("Selected plant:", plant.name);
+      this.$emit("plant-selected", plant);
+    }
+  }
+};
+</script>
+
+<style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.plant-app {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+.header {
+  margin-bottom: 24px;
+  padding: 0 0 16px 0;
+}
+
+.progress-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.progress-bar::before {
+  content: "";
+  position: absolute;
+  top: 24px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #e0e0e0;
+  z-index: 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 1;
+  position: relative;
+}
+
+.step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: #f0f0f0;
+  color: #999;
+}
+
+.step-circle.active {
+  background: linear-gradient(135deg, #42e695, #3bb2b8);
+  color: white;
+}
+
+.step-circle.completed {
+  background: #42e695;
+  color: white;
+}
+
+.step-circle.completed::after {
+  content: "✓";
+  font-size: 20px;
+}
+
+.step-circle.inactive {
+  background: #f0f0f0;
+  color: #999;
+}
+
+.step-label {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.content-section {
+  background: white;
+  border-radius: 12px;
+  padding: 48px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.address-form {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.form-title {
+  font-size: 36px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 16px;
+}
+
+.form-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 32px;
+}
+
+.input-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.address-input {
+  flex: 1;
+  padding: 16px 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.address-input:focus {
+  outline: none;
+  border-color: #42e695;
+}
+
+.address-input::placeholder {
+  color: #999;
+}
+
+.next-button {
+  padding: 16px 48px;
+  background: linear-gradient(135deg, #42e695, #3bb2b8);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.next-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(66, 230, 149, 0.4);
+}
+
+.next-button:active {
+  transform: translateY(0);
+}
+
+.recommendations-section {
+  margin-top: 48px;
+}
+
+.section-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 32px;
+}
+
+.plants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.plant-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.plant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.plant-image {
+  width: 100%;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.plant-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.plant-emoji {
+  font-size: 64px;
+}
+
+.peace-lily {
+  background: linear-gradient(135deg, #8b9467, #6b7652);
+}
+
+.snake-plant {
+  background: linear-gradient(135deg, #7cb342, #558b2f);
+}
+
+.zz-plant {
+  background: linear-gradient(135deg, #2e7d32, #1b5e20);
+}
+
+.plant-info {
+  padding: 20px;
+}
+
+.plant-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 8px;
+}
+
+.plant-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Step1 样式 - 浅色调 */
+.location-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.location-card {
+  background: #f9f9f9;
+  color: #2c3e50;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.location-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-color: #42e695;
+}
+
+.location-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.location-desc {
+  font-size: 14px;
+  color: #555;
+}
+</style>

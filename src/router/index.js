@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import WelcomePage from '@/views/WelcomePage.vue' // 引入欢迎页
 import HomePage from '@/views/HomePage.vue'       // 示例页面
 import AboutPage from '@/views/AboutPage.vue'     // 示例页面
+import Recommendation from '@/views/Recommendation.vue'
 
 const routes = [
   {
@@ -18,6 +19,11 @@ const routes = [
     path: '/about',
     name: 'about',
     component: AboutPage
+  },
+  {
+    path: '/recommendation',
+    name: 'Recommendation',
+    component: Recommendation
   }
 ]
 

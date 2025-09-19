@@ -1,12 +1,20 @@
-<script setup>
-// 不需要再引入 HelloWorld 或 TheWelcome
-</script>
-
 <template>
-  <!-- 这里就是路由页面的出口 -->
-  <router-view />
+  <div id="app">
+    <!-- 除了 WelcomePage，其他页面都显示 TopBar -->
+    <TopBar v-if="$route.name !== 'welcome'" 
+            :coins="1250" 
+            :xp="5800" 
+            :level="12" />
+
+    <!-- 路由页面 -->
+    <router-view />
+  </div>
 </template>
 
-<style scoped>
-/* 你可以保留需要的全局样式，这里我清空了默认样式 */
-</style>
+<script>
+import TopBar from "@/components/TopBar.vue";
+
+export default {
+  components: { TopBar }
+};
+</script>
