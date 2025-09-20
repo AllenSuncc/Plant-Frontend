@@ -20,6 +20,18 @@
         </div>
       </div>
 
+      <!-- Tree Growth Animation -->
+      <div class="tree-container">
+        <transition name="grow">
+          <img
+            :key="treeStage"
+            :src="growthImages[treeStage]"
+            alt="Tree Growth"
+            class="tree-image"
+          />
+        </transition>
+      </div>
+
       <!-- Step 0: Address Form -->
       <div v-if="currentStep === 0" class="content-section">
         <div class="address-form">
@@ -111,20 +123,15 @@
         </div>
       </div>
 
-      <!-- Recommendations (no Step5 in progress bar) -->
-      <div v-if="currentStep === 5" class="recommendations-section">
-        <h2 class="section-title">Plant Recommendations</h2>
+      <!-- Step 5: Recommendations -->
+      <div v-if="currentStep === 5" class="content-section recommendations-section">
+        <h1 class="form-title">Your Plant Recommendations</h1>
+        <p class="form-subtitle">Based on your choices, here are some plants for you:</p>
 
         <div class="plants-grid">
-          <div
-            class="plant-card"
-            v-for="plant in plants"
-            :key="plant.id"
-            @click="selectPlant(plant)"
-          >
-            <div class="plant-image" :class="plant.imageClass">
-              <img v-if="plant.image" :src="plant.image" :alt="plant.name" />
-              <span v-else class="plant-emoji">{{ plant.emoji }}</span>
+          <div class="plant-card" v-for="plant in recommendedPlants" :key="plant.id">
+            <div class="plant-image">
+              <img :src="plant.image" :alt="plant.name" />
             </div>
             <div class="plant-info">
               <h3 class="plant-name">{{ plant.name }}</h3>
@@ -138,19 +145,29 @@
 </template>
 
 <script>
+import soilImg from "@/assets/images/Recommendation/soil.png";
+import seedlingImg from "@/assets/images/Recommendation/seedling.png";
+import saplingImg from "@/assets/images/Recommendation/sapling.png";
+import mediumTreeImg from "@/assets/images/Recommendation/smalltree.png";
+import bigTreeImg from "@/assets/images/Recommendation/bigtree.png";
+import fullTreeImg from "@/assets/images/Recommendation/fulltree.png";
+
 export default {
   name: "LittleBabyPlant",
   data() {
     return {
       address: "",
       currentStep: 0,
+      treeStage: 0,
       steps: [
         { number: "0", label: "Address", status: "active" },
         { number: "1", label: "Location", status: "inactive" },
         { number: "2", label: "Care Time", status: "inactive" },
         { number: "3", label: "Pets", status: "inactive" },
-        { number: "4", label: "Difficulty", status: "inactive" }
+        { number: "4", label: "Difficulty", status: "inactive" },
+        { number: "5", label: "Recommendation", status: "inactive" }
       ],
+      growthImages: [soilImg, seedlingImg, saplingImg, mediumTreeImg, bigTreeImg, fullTreeImg],
       plantLocations: [
         { id: 1, title: "Apartment window", description: "Good sun, limited footprint" },
         { id: 2, title: "Inside the room", description: "No natural sun" },
@@ -169,77 +186,60 @@ export default {
         { id: 2, title: "Medium", description: "Balanced care effort" },
         { id: 3, title: "Easy", description: "Low maintenance, beginner-friendly" }
       ],
-      plants: [
-        {
-          id: 1,
-          name: "Peace Lily",
-          description: "Low maintenance, air purifying",
-          imageClass: "peace-lily",
-          emoji: "🌿",
-          image: ""
-        },
-        {
-          id: 2,
-          name: "Snake Plant",
-          description: "Tolerates low light, easy care",
-          imageClass: "snake-plant",
-          emoji: "🌵",
-          image: ""
-        },
-        {
-          id: 3,
-          name: "ZZ Plant",
-          description: "Drought tolerant, minimal care",
-          imageClass: "zz-plant",
-          emoji: "🍃",
-          image: ""
-        }
+      recommendedPlants: [
+        { id: 1, name: "Peace Lily", description: "Air purifying, shade tolerant.", image: "https://via.placeholder.com/300" },
+        { id: 2, name: "Snake Plant", description: "Low maintenance, stylish.", image: "https://via.placeholder.com/300" },
+        { id: 3, name: "ZZ Plant", description: "Hardy, survives in low light.", image: "https://via.placeholder.com/300" }
       ]
     };
   },
   methods: {
+    nextStep() {
+      this.steps[this.currentStep].status = "completed";
+      this.currentStep++;
+      this.steps[this.currentStep].status = "active";
+
+      if (this.treeStage < this.growthImages.length - 1) {
+        this.treeStage++;
+      }
+    },
     handleNext() {
       if (this.address.trim()) {
-        this.steps[this.currentStep].status = "completed";
-        this.currentStep++;
-        this.steps[this.currentStep].status = "active";
+        this.nextStep();
       } else {
         alert("Please enter your address");
       }
     },
     selectLocation(option) {
+      console.log("Location selected:", option.title);
       this.$emit("location-selected", option);
-      this.steps[this.currentStep].status = "completed";
-      this.currentStep++;
-      this.steps[this.currentStep].status = "active";
+      this.nextStep();
     },
     selectCareTime(option) {
+      console.log("Care time selected:", option.title);
       this.$emit("caretime-selected", option);
-      this.steps[this.currentStep].status = "completed";
-      this.currentStep++;
-      this.steps[this.currentStep].status = "active";
+      this.nextStep();
     },
     selectPetOption(option) {
+      console.log("Pet option selected:", option.title);
       this.$emit("pet-option-selected", option);
+      this.nextStep();
+    },
+    selectDifficulty(option) {
+      console.log("Difficulty selected:", option.title);
+      this.$emit("difficulty-selected", option);
+
       this.steps[this.currentStep].status = "completed";
       this.currentStep++;
       this.steps[this.currentStep].status = "active";
-    },
-    selectDifficulty(option) {
-      this.$emit("difficulty-selected", option);
-      this.steps[this.currentStep].status = "completed";
-      // 进入推荐页面（但不更新路线图）
-      this.currentStep = 5;
-    },
-    selectPlant(plant) {
-      this.$emit("plant-selected", plant);
+
+      if (this.treeStage < this.growthImages.length - 1) {
+        this.treeStage++;
+      }
     }
   }
 };
 </script>
-
-
-
 
 <style scoped>
 * {
@@ -456,22 +456,6 @@ export default {
   object-fit: cover;
 }
 
-.plant-emoji {
-  font-size: 64px;
-}
-
-.peace-lily {
-  background: linear-gradient(135deg, #8b9467, #6b7652);
-}
-
-.snake-plant {
-  background: linear-gradient(135deg, #7cb342, #558b2f);
-}
-
-.zz-plant {
-  background: linear-gradient(135deg, #2e7d32, #1b5e20);
-}
-
 .plant-info {
   padding: 20px;
 }
@@ -489,7 +473,6 @@ export default {
   line-height: 1.5;
 }
 
-/* Step1 样式 - 浅色调 */
 .location-options {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -522,5 +505,47 @@ export default {
 .location-desc {
   font-size: 14px;
   color: #555;
+}
+
+/* 树的切换动画，修复闪烁 */
+.tree-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  min-height: 220px; /* 固定容器高度 */
+  position: relative;
+}
+
+.tree-image {
+  width: 200px;        /* 固定宽度 */
+  height: 220px;       /* 固定高度 */
+  object-fit: contain; /* 保持比例，不裁剪 */
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.grow-enter-active,
+.grow-leave-active {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.grow-enter-from {
+  opacity: 0;
+  transform: translateX(-50%) scale(0.8);
+}
+.grow-enter-to {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+.grow-leave-from {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+.grow-leave-to {
+  opacity: 0;
+  transform: translateX(-50%) scale(1.2);
 }
 </style>
