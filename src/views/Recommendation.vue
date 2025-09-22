@@ -5,14 +5,11 @@
       <div class="header">
         <div class="progress-bar">
           <div class="step" v-for="(step, index) in steps" :key="index">
-            <div
-              class="step-circle"
-              :class="{
-                'completed': step.status === 'completed',
-                'active': step.status === 'active',
-                'inactive': step.status === 'inactive'
-              }"
-            >
+            <div class="step-circle" :class="{
+              'completed': step.status === 'completed',
+              'active': step.status === 'active',
+              'inactive': step.status === 'inactive'
+            }">
               <span v-if="step.status !== 'completed'">{{ step.number }}</span>
             </div>
             <span class="step-label">{{ step.label }}</span>
@@ -23,12 +20,7 @@
       <!-- Tree Growth Animation -->
       <div class="tree-container">
         <transition name="grow">
-          <img
-            :key="treeStage"
-            :src="growthImages[treeStage]"
-            alt="Tree Growth"
-            class="tree-image"
-          />
+          <img :key="treeStage" :src="growthImages[treeStage]" alt="Tree Growth" class="tree-image" />
         </transition>
       </div>
 
@@ -36,17 +28,16 @@
       <div v-if="currentStep === 0" class="content-section">
         <div class="address-form">
           <h1 class="form-title">Where do you live?</h1>
-          <p class="form-subtitle">Enter your address to find plants suitable for your area.</p>
+          <p class="form-subtitle">
+            Enter your address to find plants suitable for your area.
+          </p>
 
           <div class="input-group">
-            <input
-              type="text"
-              class="address-input"
-              placeholder="Enter your address"
-              v-model="address"
-              @keyup.enter="handleNext"
-            />
-            <button class="next-button" @click="handleNext">Next</button>
+            <input type="text" class="address-input" placeholder="Enter your address" v-model="address"
+              ref="addressInput" />
+            <button class="next-button" @click="handleAddressNext">
+              Next
+            </button>
           </div>
         </div>
       </div>
@@ -54,15 +45,12 @@
       <!-- Step 1: Choose Plant Location -->
       <div v-if="currentStep === 1" class="content-section">
         <h1 class="form-title">Choose Your Plant Location</h1>
-        <p class="form-subtitle">Select where you plan to place your plant.</p>
+        <p class="form-subtitle">
+          Select where you plan to place your plant.
+        </p>
 
         <div class="location-options">
-          <div
-            v-for="option in plantLocations"
-            :key="option.id"
-            class="location-card"
-            @click="selectLocation(option)"
-          >
+          <div v-for="option in plantLocations" :key="option.id" class="location-card" @click="selectLocation(option)">
             <h3 class="location-title">{{ option.title }}</h3>
             <p class="location-desc">{{ option.description }}</p>
           </div>
@@ -72,15 +60,12 @@
       <!-- Step 2: Choose Care Time -->
       <div v-if="currentStep === 2" class="content-section">
         <h1 class="form-title">How Much Time Can You Spend?</h1>
-        <p class="form-subtitle">Select the daily time you can dedicate to plant care.</p>
+        <p class="form-subtitle">
+          Select the daily time you can dedicate to plant care.
+        </p>
 
         <div class="location-options">
-          <div
-            v-for="option in careTimes"
-            :key="option.id"
-            class="location-card"
-            @click="selectCareTime(option)"
-          >
+          <div v-for="option in careTimes" :key="option.id" class="location-card" @click="selectCareTime(option)">
             <h3 class="location-title">{{ option.title }}</h3>
             <p class="location-desc">{{ option.description }}</p>
           </div>
@@ -93,12 +78,7 @@
         <p class="form-subtitle">We'll filter to pet-safe plants if needed.</p>
 
         <div class="location-options">
-          <div
-            v-for="option in petOptions"
-            :key="option.id"
-            class="location-card"
-            @click="selectPetOption(option)"
-          >
+          <div v-for="option in petOptions" :key="option.id" class="location-card" @click="selectPetOption(option)">
             <h3 class="location-title">{{ option.title }}</h3>
             <p class="location-desc">{{ option.description }}</p>
           </div>
@@ -108,15 +88,12 @@
       <!-- Step 4: Plant Difficulty -->
       <div v-if="currentStep === 4" class="content-section">
         <h1 class="form-title">Select Plant Difficulty</h1>
-        <p class="form-subtitle">Choose how challenging you want your plant care to be.</p>
+        <p class="form-subtitle">
+          Choose how challenging you want your plant care to be.
+        </p>
 
         <div class="location-options">
-          <div
-            v-for="option in difficulties"
-            :key="option.id"
-            class="location-card"
-            @click="selectDifficulty(option)"
-          >
+          <div v-for="option in difficulties" :key="option.id" class="location-card" @click="selectDifficulty(option)">
             <h3 class="location-title">{{ option.title }}</h3>
             <p class="location-desc">{{ option.description }}</p>
           </div>
@@ -126,7 +103,9 @@
       <!-- Step 5: Recommendations -->
       <div v-if="currentStep === 5" class="content-section recommendations-section">
         <h1 class="form-title">Your Plant Recommendations</h1>
-        <p class="form-subtitle">Based on your choices, here are some plants for you:</p>
+        <p class="form-subtitle">
+          Based on your choices, here are some plants for you:
+        </p>
 
         <div class="plants-grid">
           <div class="plant-card" v-for="plant in recommendedPlants" :key="plant.id">
@@ -143,6 +122,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import soilImg from "@/assets/images/Recommendation/soil.png";
@@ -167,7 +147,14 @@ export default {
         { number: "4", label: "Difficulty", status: "inactive" },
         { number: "5", label: "Recommendation", status: "inactive" }
       ],
-      growthImages: [soilImg, seedlingImg, saplingImg, mediumTreeImg, bigTreeImg, fullTreeImg],
+      growthImages: [
+        soilImg,
+        seedlingImg,
+        saplingImg,
+        mediumTreeImg,
+        bigTreeImg,
+        fullTreeImg
+      ],
       plantLocations: [
         { id: 1, title: "Apartment window", description: "Good sun, limited footprint" },
         { id: 2, title: "Inside the room", description: "No natural sun" },
@@ -186,14 +173,61 @@ export default {
         { id: 2, title: "Medium", description: "Balanced care effort" },
         { id: 3, title: "Easy", description: "Low maintenance, beginner-friendly" }
       ],
-      recommendedPlants: [
-        { id: 1, name: "Peace Lily", description: "Air purifying, shade tolerant.", image: "https://via.placeholder.com/300" },
-        { id: 2, name: "Snake Plant", description: "Low maintenance, stylish.", image: "https://via.placeholder.com/300" },
-        { id: 3, name: "ZZ Plant", description: "Hardy, survives in low light.", image: "https://via.placeholder.com/300" }
-      ]
+      recommendedPlants: [],
+      filters: {
+        lat: null,
+        lon: null,
+        indoor: null,
+        difficulty_level: null,
+        poisonous_to_pets: null,
+        sunlight_requirement: null
+      }
     };
   },
+  mounted() {
+    const initAutocomplete = () => {
+      if (!window.google || !window.google.maps) {
+        console.error("Google Maps SDK not loaded yet");
+        return;
+      }
+
+      const input = this.$refs.addressInput;
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ["geocode"],
+        componentRestrictions: { country: "au" } // 可选：限制为澳大利亚
+      });
+
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          this.filters.lat = place.geometry.location.lat();
+          this.filters.lon = place.geometry.location.lng();
+          this.address = place.formatted_address;
+
+          console.log("✅ Selected address:", this.address);
+          console.log("✅ Geocoded Location:", this.filters.lat, this.filters.lon);
+        } else {
+          alert("Please select a valid address from the suggestions.");
+        }
+      });
+    };
+
+    // Google Maps 脚本可能还没加载好 → 延迟初始化
+    if (window.google && window.google.maps) {
+      initAutocomplete();
+    } else {
+      window.addEventListener("load", initAutocomplete);
+    }
+  },
   methods: {
+    handleAddressNext() {
+      if (!this.filters.lat || !this.filters.lon) {
+        alert("Please select an address before proceeding.");
+        return;
+      }
+      this.nextStep();
+    },
+
     nextStep() {
       this.steps[this.currentStep].status = "completed";
       this.currentStep++;
@@ -203,31 +237,38 @@ export default {
         this.treeStage++;
       }
     },
-    handleNext() {
-      if (this.address.trim()) {
-        this.nextStep();
-      } else {
-        alert("Please enter your address");
-      }
-    },
+
     selectLocation(option) {
       console.log("Location selected:", option.title);
-      this.$emit("location-selected", option);
+
+      // sunlight_requirement 字段逻辑
+      if (option.id === 1) {
+        this.filters.sunlight_requirement = null;   // Apartment window
+      } else if (option.id === 2) {
+        this.filters.sunlight_requirement = "deep shade"; // Inside the room
+      } else if (option.id === 3) {
+        this.filters.sunlight_requirement = "part shade"; // Shaded balcony
+      }
+
       this.nextStep();
     },
+
     selectCareTime(option) {
       console.log("Care time selected:", option.title);
-      this.$emit("caretime-selected", option);
       this.nextStep();
     },
+
     selectPetOption(option) {
       console.log("Pet option selected:", option.title);
-      this.$emit("pet-option-selected", option);
+      this.filters.poisonous_to_pets = option.id === 1 ? 0 : null;
       this.nextStep();
     },
+
     selectDifficulty(option) {
       console.log("Difficulty selected:", option.title);
-      this.$emit("difficulty-selected", option);
+      if (option.id === 1) this.filters.difficulty_level = ["easy", "medium", "high"];
+      if (option.id === 2) this.filters.difficulty_level = ["medium", "easy"];
+      if (option.id === 3) this.filters.difficulty_level = "easy";
 
       this.steps[this.currentStep].status = "completed";
       this.currentStep++;
@@ -236,10 +277,44 @@ export default {
       if (this.treeStage < this.growthImages.length - 1) {
         this.treeStage++;
       }
+
+      this.fetchRecommendations();
+    },
+
+    async fetchRecommendations() {
+      try {
+        console.log("🚀 Sending request with filters:", this.filters);
+
+        const response = await fetch("https://tvqborfwxe.execute-api.ap-southeast-2.amazonaws.com/dev/recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(this.filters)
+        });
+
+        console.log("📡 Response status:", response.status);
+
+        const data = await response.json();
+        console.log("📥 Raw response:", data);
+
+        if (!data.recommendations) {
+          console.warn("⚠️ No 'recommendations' field found in response");
+        }
+
+        this.recommendedPlants = (data.recommendations || []).map((p) => ({
+          id: p.species_id,
+          name: p.common_name || p.scientific_name || "Unknown Plant",
+          description: `${p.scientific_name || ""} | Sunlight: ${p.sunlight_requirement || "N/A"} | Difficulty: ${p.difficulty_level || "N/A"}`,
+          image: p.photo_url || "https://via.placeholder.com/300"
+        }));
+      } catch (error) {
+        console.error("❌ Error fetching recommendations:", error);
+      }
     }
   }
 };
 </script>
+
+
 
 <style scoped>
 * {
@@ -512,14 +587,18 @@ export default {
   display: flex;
   justify-content: center;
   margin-bottom: 24px;
-  min-height: 220px; /* 固定容器高度 */
+  min-height: 220px;
+  /* 固定容器高度 */
   position: relative;
 }
 
 .tree-image {
-  width: 200px;        /* 固定宽度 */
-  height: 220px;       /* 固定高度 */
-  object-fit: contain; /* 保持比例，不裁剪 */
+  width: 200px;
+  /* 固定宽度 */
+  height: 220px;
+  /* 固定高度 */
+  object-fit: contain;
+  /* 保持比例，不裁剪 */
   position: absolute;
   top: 0;
   left: 50%;
@@ -536,14 +615,17 @@ export default {
   opacity: 0;
   transform: translateX(-50%) scale(0.8);
 }
+
 .grow-enter-to {
   opacity: 1;
   transform: translateX(-50%) scale(1);
 }
+
 .grow-leave-from {
   opacity: 1;
   transform: translateX(-50%) scale(1);
 }
+
 .grow-leave-to {
   opacity: 0;
   transform: translateX(-50%) scale(1.2);
